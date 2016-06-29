@@ -26,7 +26,10 @@ grid = []
 for y in range(y_count):
 	grid.append([])
 	for x in range(x_count):
-		grid[y].append(x)
+		grid[y].append(False)
+
+#makeshift stack that cooridantes of possible options will be pushed to
+positions = []
 
 ######################################################################
 #                          FUNCTIONS                                 # 
@@ -36,23 +39,19 @@ for y in range(y_count):
 def make_block(x, y): #print block to screen
 	pygame.draw.rect(screen, block_color, (x, y, b_width, b_height))
 
+def push(x,y):
+	positions.append([x,y])
+
+def pop():
+	return positions.pop()
+
+def checked(x,y):
+	for x in #if num in list for each list
+
 #creates maze by stacking all options at intersections
 def create_maze():
-	
-
-
-screen = pygame.display.set_mode((width,height))
-pygame.display.set_caption('Mazerunner')
-screen.fill(background_color)
-make_block(10, 380)
-
-pygame.display.flip() #update screen
-running = True
-while running:
-	for event in pygame.event.get():
-		if event.type == pygame.QUIT: #quit if red X button pressed
-			running = False
-
+	while True:
+		if(#check list)
 
 ######################################################################
 #                          MAIN                                      # 
@@ -60,4 +59,16 @@ while running:
 
 if __name__ == '__main__':
 	print("mazerunner beginning...")
+  screen = pygame.display.set_mode((width,height))
+	pygame.display.set_caption('Mazerunner')
+	screen.fill(background_color)
+	make_block(10, 380)
+
+	pygame.display.flip() #update screen
+	running = True
+	while running:
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT: #quit if red X button pressed
+				running = False
+
 
