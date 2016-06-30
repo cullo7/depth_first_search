@@ -1,5 +1,6 @@
 import pygame
 import sys
+import time
 
 ######################################################################                          FUNCTIONS                                 # 
 #                             SETUP                                  #
@@ -28,7 +29,6 @@ for y in range(y_count):
 	grid.append([])
 	for x in range(x_count):
 		grid[y].append(False)
-		print(y,x)
 
 #makeshift stack that cooridantes of possible options will be pushed to
 positions = []
@@ -39,10 +39,10 @@ positions = []
 
 #prints block to screen -- called when mazerunner visits a square	
 def make_block(x, y): #print block to screen
-	pygame.draw.rect(screen, block_color, (x, y, b_width, b_height))
+	pygame.draw.rect(screen, block_color, (x*10, y*10, b_width, b_height))
 
 def push(x,y):
-	positionsi.append([x,y])
+	positions.append([x,y])
 
 def pop():
 	if (positions):
@@ -50,22 +50,20 @@ def pop():
 	else:
 		return -1
 
-def check(x,y):
+def move_to(x,y):
 	if(x > max_width or x < min_width or y > max_height or y < min_height):
-		return True
-	if(positions[y][x] == True):
-		return True
-	else:
 		return False
+	if(positions[y][x] == True):
+		return False
+	else:
+		return True
 
 def empty():
-	if len(positions) == 0:
-		return True
-	else:
-		return False
+	return len(positions) == 0
 
 def discover(x,y):
-	positions[y][x] = True
+	grid[y-1][x-1] = True
+	make_block(x, y)
 
 def create_maze(cur_path):
 	discover(cur_path)
@@ -76,33 +74,42 @@ def create_maze(cur_path):
 
 if __name__ == '__main__':
 	print("mazerunner beginning...")
-  screen = pygame.display.set_mode((width,height))
+	screen = pygame.display.set_mode((width,height))
 	pygame.display.set_caption('Mazerunner')
 	screen.fill(background_color)
-	make_block(10, 380)
 
 	pygame.display.flip() #update screen
 	running = True
 	while running:
-		for event in pygame.event.get():
+		#creates maze by stacking all options at intersections
+		current_x = min_width/10
+		current_y = min_height/10
+		
+		#possible coordinate system
+		cur_path = [] 
+		push(current_x, current_y)
+		print empty()	
+		while not empty():
+			cur_path = pop()
+			discover(cur_path[0], cur_path[1])
+			print "after discover"
+			if(move_to(cur_path[0]+1,cur_path[1])):#to the right one
+				push(current_x+1,current_y)
+			
+			if(move_to(cur_path[0],cur_path[1]-1)):#up one
+				push(current_x,current_y-1)
+			
+			if(move_to(cur_path[0]-1,cur_path[1])):#to the left one
+				push(current_x+1,current_y)	
+			
+			if(move_to(cur_path[0],cur_path[1]+1)):#down one
+				push(current_x+1,current_y)
+			print ("yo")
+			time.sleep(1)
+
+			pygame.display.flip()
+		
+		pygame.display.flip()
+	for event in pygame.event.get():
 			if event.type == pygame.QUIT: #quit if red X button pressed
 				running = False
- 
-	#creates maze by stacking all options at intersections
-	current_x = min_width
-	current_y = min_height
-	#possible coordinate system
-	cur_path = [] 
-	push(current_x, current_y)
-	while !empty():
-		cur_path = pop()
-		if(!check):
-			discover(cur_path[0], cur_path[1])
-		if(!check(cur_path[0]+10,cur_path[1])):#to the right one
-			push(current_x+10,current_y)
-		if(!check(cur_path[0],cur_path[1]-10)):#up one
-			push(current_x,current_y-10)
-		if(!check(cur_path[0]-10,cur_path[1])):#to the left one
-			push(current_x+10,current_y)	
-		if(!check(cur_path[0],cur_path[1]+10)):#down one
-			push(current_x+10,current_y)
