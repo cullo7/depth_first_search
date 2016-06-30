@@ -27,6 +27,7 @@ for y in range(y_count):
 	grid.append([])
 	for x in range(x_count):
 		grid[y].append(False)
+		print(y,x)
 
 #makeshift stack that cooridantes of possible options will be pushed to
 positions = []
@@ -45,13 +46,13 @@ def push(x,y):
 def pop():
 	return positions.pop()
 
-def checked(x,y):
-	for x in #if num in list for each list
-
-#creates maze by stacking all options at intersections
-def create_maze():
-	while True:
-		if(#check list)
+def check(x,y):
+	if(x > max_width or x < min_width or y > max_height or y < min_height):
+		return True
+	if(positions[y][x] == True):
+		return True
+	else:
+		return False
 
 ######################################################################
 #                          MAIN                                      # 
@@ -70,5 +71,18 @@ if __name__ == '__main__':
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT: #quit if red X button pressed
 				running = False
-
-
+ 
+	#creates maze by stacking all options at intersections
+	current_x = min_width
+	current_y = min_height
+	while True
+		if(check(current_x+10,current_y)):#to the right one
+			push(current_x+10,current_y)
+		if(check(current_x,current_y-10)):#up one
+			push(current_x,current_y-10)
+		if(check(current_x-10,current_y)):#to the left one
+			push(current_x-10,current_y)
+		if(check(current_x,current_y+10)):#down one
+			push(current_x,current_y+10)
+		while(!empty()):
+			
