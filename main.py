@@ -1,4 +1,5 @@
 import pygame
+import sys
 
 ######################################################################                          FUNCTIONS                                 # 
 #                             SETUP                                  #
@@ -41,10 +42,13 @@ def make_block(x, y): #print block to screen
 	pygame.draw.rect(screen, block_color, (x, y, b_width, b_height))
 
 def push(x,y):
-	positions.append([x,y])
+	positionsi.append([x,y])
 
 def pop():
-	return positions.pop()
+	if (positions):
+		return positions.pop()
+	else:
+		return -1
 
 def check(x,y):
 	if(x > max_width or x < min_width or y > max_height or y < min_height):
@@ -53,6 +57,18 @@ def check(x,y):
 		return True
 	else:
 		return False
+
+def empty():
+	if len(positions) == 0:
+		return True
+	else:
+		return False
+
+def discover(x,y):
+	positions[y][x] = True
+
+def create_maze(cur_path):
+	discover(cur_path)
 
 ######################################################################
 #                          MAIN                                      # 
@@ -75,14 +91,18 @@ if __name__ == '__main__':
 	#creates maze by stacking all options at intersections
 	current_x = min_width
 	current_y = min_height
-	while True
-		if(check(current_x+10,current_y)):#to the right one
+	#possible coordinate system
+	cur_path = [] 
+	push(current_x, current_y)
+	while !empty():
+		cur_path = pop()
+		if(!check):
+			discover(cur_path[0], cur_path[1])
+		if(!check(cur_path[0]+10,cur_path[1])):#to the right one
 			push(current_x+10,current_y)
-		if(check(current_x,current_y-10)):#up one
+		if(!check(cur_path[0],cur_path[1]-10)):#up one
 			push(current_x,current_y-10)
-		if(check(current_x-10,current_y)):#to the left one
-			push(current_x-10,current_y)
-		if(check(current_x,current_y+10)):#down one
-			push(current_x,current_y+10)
-		while(!empty()):
-			
+		if(!check(cur_path[0]-10,cur_path[1])):#to the left one
+			push(current_x+10,current_y)	
+		if(!check(cur_path[0],cur_path[1]+10)):#down one
+			push(current_x+10,current_y)
