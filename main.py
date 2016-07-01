@@ -2,7 +2,12 @@ import pygame
 import sys
 import time
 
-######################################################################                          FUNCTIONS                                 # 
+# TODO
+# multiple files
+# random direction at intersection
+#
+
+###################################################################### 
 #                             SETUP                                  #
 ######################################################################
 
@@ -40,6 +45,7 @@ positions = []
 #prints block to screen -- called when mazerunner visits a square	
 def make_block(x, y): #print block to screen
 	pygame.draw.rect(screen, block_color, (x*10, y*10, b_width, b_height))
+	print "in make block"
 
 def push(x,y):
 	positions.append([x,y])
@@ -63,6 +69,7 @@ def empty():
 
 def discover(x,y):
 	grid[y-1][x-1] = True
+	print("disc")
 	make_block(x, y)
 
 def create_maze(cur_path):
@@ -81,6 +88,8 @@ if __name__ == '__main__':
 	pygame.display.flip() #update screen
 	running = True
 	while running:
+		pygame.display.flip()
+		time.sleep(5)
 		#creates maze by stacking all options at intersections
 		current_x = min_width/10
 		current_y = min_height/10
@@ -91,6 +100,7 @@ if __name__ == '__main__':
 		print empty()	
 		while not empty():
 			cur_path = pop()
+			screen.fill((255,255,255))
 			discover(cur_path[0], cur_path[1])
 			print "after discover"
 			if(move_to(cur_path[0]+1,cur_path[1])):#to the right one
@@ -110,6 +120,6 @@ if __name__ == '__main__':
 			pygame.display.flip()
 		
 		pygame.display.flip()
-	for event in pygame.event.get():
-			if event.type == pygame.QUIT: #quit if red X button pressed
-				running = False
+		for event in pygame.event.get():
+				if event.type == pygame.QUIT: #quit if red X button pressed
+					running = False
