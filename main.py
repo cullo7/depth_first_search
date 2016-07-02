@@ -1,6 +1,4 @@
-import pygame
-import sys
-import time
+import pygame, sys, time
 
 # TODO
 # multiple files
@@ -17,13 +15,13 @@ block_color = (255,255,255) #white
 
 #giving a 10 pixel buffer on sides
 b_width = b_height = 10
-max_height = min_width = 10
-min_height = 380
+min_height = min_width = 10
+max_height = 380
 max_width = 480
 
 #amount of height and width for 10x10 pixel boxe grid
-y_count = (height/b_height)-2
-x_count = (width/b_width)-2
+y_count = (max_height/b_height)
+x_count = (max_width/b_width)
 
 """
 creating a x_count by y_count grid to keep track of squares already visited
@@ -38,13 +36,15 @@ for y in range(y_count):
 #makeshift stack that cooridantes of possible options will be pushed to
 positions = []
 
+pygame.init() 
+
 ######################################################################
 #                          FUNCTIONS                                 # 
 ######################################################################
 
 #prints block to screen -- called when mazerunner visits a square	
 def make_block(x, y): #print block to screen
-	pygame.draw.rect(screen, block_color, (x*10, y*10, b_width, b_height))
+	pygame.draw.rect(screen, block_color, (x, y, b_width, b_height))
 	print "in make block"
 
 def push(x,y):
@@ -57,9 +57,15 @@ def pop():
 		return -1
 
 def move_to(x,y):
+	x = (x/10)-1
+	y = (38 - (y/10))-1
+	print("x ", x)
+	print("y ", y)
+	print("height ", len(grid))
+	print("width ", len(grid[0]))
 	if(x > max_width or x < min_width or y > max_height or y < min_height):
 		return False
-	if(positions[y][x] == True):
+	if(grid[y][x] == True):
 		return False
 	else:
 		return True
@@ -68,12 +74,11 @@ def empty():
 	return len(positions) == 0
 
 def discover(x,y):
-	grid[y-1][x-1] = True
-	print("disc")
 	make_block(x, y)
-
-def create_maze(cur_path):
-	discover(cur_path)
+	#adjusting to index the array
+	x = (x/10)-1
+	y = 38 - (y/10)
+	grid[y][x] = True
 
 ######################################################################
 #                          MAIN                                      # 
@@ -87,39 +92,42 @@ if __name__ == '__main__':
 
 	pygame.display.flip() #update screen
 	running = True
-	while running:
-		pygame.display.flip()
-		time.sleep(5)
-		#creates maze by stacking all options at intersections
-		current_x = min_width/10
-		current_y = min_height/10
-		
-		#possible coordinate system
-		cur_path = [] 
-		push(current_x, current_y)
-		print empty()	
-		while not empty():
-			cur_path = pop()
-			screen.fill((255,255,255))
-			discover(cur_path[0], cur_path[1])
-			print "after discover"
-			if(move_to(cur_path[0]+1,cur_path[1])):#to the right one
-				push(current_x+1,current_y)
-			
-			if(move_to(cur_path[0],cur_path[1]-1)):#up one
-				push(current_x,current_y-1)
-			
-			if(move_to(cur_path[0]-1,cur_path[1])):#to the left one
-				push(current_x+1,current_y)	
-			
-			if(move_to(cur_path[0],cur_path[1]+1)):#down one
-				push(current_x+1,current_y)
-			print ("yo")
-			time.sleep(1)
+	s = True
+	#creates maze by stacking all options at intersections
+	current_x = min_width/10
+	current_y = min_height/10
+	#possible coordinate system
+	cur_path = [] 
+	push(current_x, current_y)
 
-			pygame.display.flip()
-		
-		pygame.display.flip()
+	while running:
 		for event in pygame.event.get():
-				if event.type == pygame.QUIT: #quit if red X button pressed
-					running = False
+			if event.type == pygame.QUIT: #quit if red X button pressed
+				running = False
+		
+		while not empty():
+				cur_path = pop()
+				print (cur_path[0]," ",cur_path[1])
+				s = not s
+				if(s):
+					screen.fill((0,0,0))
+				else:
+					screen.fill((255,255,255))
+				if move_to(cur_path[0], cur_path[1]):
+					discover(cur_path[0], cur_path[1])	
+				if(move_to(cur_path[0]+10,cur_path[1])):#to the right one
+					push(current_x+10,current_y)
+				
+				if(move_to(cur_path[0],cur_path[1]-10)):#up one
+					push(current_x,current_y-10)
+				
+				if(move_to(cur_path[0]-10,cur_path[1])):#to the left one
+					push(current_x+10,current_y)	
+				
+				if(move_to(cur_path[0],cur_path[1]+10)):#down one
+					push(current_x+10,current_y)
+				print ("yo")
+				time.sleep(2)
+				pygame.display.flip()
+		pygame.display.flip()
+
