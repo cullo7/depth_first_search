@@ -1,4 +1,4 @@
-import pygame, sys, time
+import pygame, sys, time, random
 
 # TODO
 # multiple files
@@ -57,23 +57,28 @@ def pop():
 		return -1
 
 def move_to(x,y):
-	x = (x/10)-1
-	y = (38 - (y/10))-1
+	print("move_to")
 	print("x ", x)
 	print("y ", y)
 	print("height ", len(grid))
 	print("width ", len(grid[0]))
 	if(x > max_width or x < min_width or y > max_height or y < min_height):
+		print("FAIL - OOB")
 		return False
+	x = (x/10)-1
+	y = 38 - (y/10)
 	if(grid[y][x] == True):
+		print("FAIL - EXISTS")
 		return False
 	else:
+		print("SUCCESS")
 		return True
 
 def empty():
 	return len(positions) == 0
 
 def discover(x,y):
+	print("disc")
 	make_block(x, y)
 	#adjusting to index the array
 	x = (x/10)-1
@@ -94,8 +99,8 @@ if __name__ == '__main__':
 	running = True
 	s = True
 	#creates maze by stacking all options at intersections
-	current_x = min_width/10
-	current_y = min_height/10
+	current_x = min_width
+	current_y = max_height
 	#possible coordinate system
 	cur_path = [] 
 	push(current_x, current_y)
@@ -107,27 +112,35 @@ if __name__ == '__main__':
 		
 		while not empty():
 				cur_path = pop()
-				print (cur_path[0]," ",cur_path[1])
-				s = not s
-				if(s):
-					screen.fill((0,0,0))
-				else:
-					screen.fill((255,255,255))
+				print(cur_path[0],"<current>", cur_path[1])
 				if move_to(cur_path[0], cur_path[1]):
 					discover(cur_path[0], cur_path[1])	
+
+				temp_list = []
+				count = 0
+				
 				if(move_to(cur_path[0]+10,cur_path[1])):#to the right one
-					push(current_x+10,current_y)
+					count +=1
+					temp_list.append((cur_path[0]+10,cur_path[1]))
 				
 				if(move_to(cur_path[0],cur_path[1]-10)):#up one
-					push(current_x,current_y-10)
+					count +=1
+					temp_list.append((cur_path[0],cur_path[1]-10))
 				
 				if(move_to(cur_path[0]-10,cur_path[1])):#to the left one
-					push(current_x+10,current_y)	
-				
+					count +=1
+					temp_list.append((cur_path[0]-10,cur_path[1]))
+
 				if(move_to(cur_path[0],cur_path[1]+10)):#down one
-					push(current_x+10,current_y)
-				print ("yo")
-				time.sleep(2)
+					count +=1
+					temp_list.append((cur_path[0],cur_path[1]+10))
+				
+				while len(temp_list) != 0:
+					rand_num = random.randint(0, len(temp_list)-1)
+					print("***************Random integer: ", rand_num)
+					push(temp_list[rand_num][0], temp_list[rand_num][1])
+					temp_list.pop(rand_num)
+
 				pygame.display.flip()
 		pygame.display.flip()
 
