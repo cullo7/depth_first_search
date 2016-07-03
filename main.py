@@ -1,8 +1,9 @@
-import pygame, sys, time, random
+import pygame, time, random
 
-# TODO
-# multiple files
-# random direction at intersection
+# Possible Improvements #
+# split project into smaller files
+# implement a class
+# have changing block be a different color from white
 #
 
 ###################################################################### 
@@ -18,6 +19,8 @@ b_width = b_height = 10
 min_height = min_width = 10
 max_height = 390
 max_width = 490
+
+finish  = 0
 
 #amount of height and width for 10x10 pixel boxe grid
 y_count = (max_height/b_height)
@@ -36,7 +39,7 @@ for y in range(y_count):
 #makeshift stack that cooridantes of possible options will be pushed to
 positions = []
 
-pygame.init() 
+pygame.init() # initialize pygame display and modules
 
 ######################################################################
 #                          FUNCTIONS                                 # 
@@ -45,40 +48,61 @@ pygame.init()
 #prints block to screen -- called when mazerunner visits a square	
 def make_block(x, y): #print block to screen
 	pygame.draw.rect(screen, block_color, (x, y, b_width, b_height))
-	print "in make block"
+	# makes starting square red
+	if x == 10 and y == 390:
+		pygame.draw.rect(screen, (255,0,0), (x-10, y, b_width, b_height))
+	
+	# checks if program has hit top panel, if so green square signals what will be end of maze
+	if x == 490 and finish == 0:
+		pygame.draw.rect(screen, (0,255,0), (x+10, y, b_width, b_height))
+		global finish
+		finish = 1 #change so no other variable is end
+	
+	# checks if program has hit top panel, if so green square signals what will be end of maze
+	if y == 10 and finish == 0:	
+		pygame.draw.rect(screen, (0,255,0), (x, y-10, b_width, b_height))
+		global finish # get global variable
+		finish = 1 # change so no other square can be the end
 
+# push to 'stack''
 def push(x,y,DIR):
 	positions.append([x,y, DIR])
 
+# pop from stack
 def pop():
-	if (positions):
+	if (positions): # check if anyhting is in stack
 		return positions.pop()
 	else:
 		return -1
 
+# check if points are out of bounds
 def check_point(x, y):
 	return not (x > max_width or x < min_width or y > max_height or y < min_height)
 
+# check if next space can be moved into
 def move_to(x, y, direction):
-	print '\n' +'\n'
-	print("Direction: ", direction)
-	print("move_to")
-	print("x ", x)
-	print("y ", y)
-	print("height ", len(grid))
-	print("width ", len(grid[0]))
-	index_x = to_index_x(x)
+	 # change from graphical position to index of boolean values
+	index_x = to_index_x(x)	
 	index_y = to_index_y(y)
 
-	
+	# if out of bounds exit
 	if not check_point(x,y):
 		print("FAIL - OOB")
 		return False
 	
+	# if the position has already been visited
 	if(grid[index_y][index_x]):
 		print("FAIL - EXISTS")
 		return False
 	
+	"""
+		The next few lines of code check the surroundings of the square being moved into and colored
+		white. The function takes in a parameter for the direction the previous block was so that 
+		we only have to check certain blocks (opposite to the way we came). The point is checked
+		to be in the bounds, then that it is in a certain direction then if it exists already. If 
+		all these paremters are true for a certain black the function returns false and this path 
+		is no longer a possibility. left in Fail messages for debugging.
+	"""
 	if(check_point(x-10,y) and  direction != "RIGHT" and grid[index_y][index_x-1] == True):
 		print("FAIL - BOUNDARY_EXISTS")
 		return False
@@ -111,21 +135,23 @@ def move_to(x, y, direction):
 		print("FAIL - BOUNDARY_EXISTS")
 		return False
 	
+	# if no error is caught it is a viable path
 	else:
 		print("SUCCESS")
 		return True
 
+# check if no possible options
 def empty():
 	return len(positions) == 0
 
+# mark as visited and draw block
 def discover(x,y):
-	print("disc")
 	make_block(x, y)
-	#adjusting to index the array
 	x = to_index_x(x)
 	y = to_index_y(y)
 	grid[y][x] = True
 
+# map graphics to index val
 def to_index_x(x):
 	return (x/10)-1
 
@@ -144,13 +170,12 @@ if __name__ == '__main__':
 
 	pygame.display.flip() #update screen
 	running = True
-	s = True
 	#creates maze by stacking all options at intersections
 	current_x = min_width
 	current_y = max_height
 	#possible coordinate system
 	cur_path = [] 
-	push(current_x, current_y, "UP")
+	push(current_x, current_y, "UP") # add beginning of path
 	while running:
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT: #quit if red X button pressed
@@ -159,13 +184,15 @@ if __name__ == '__main__':
 		while not empty():
 				cur_path = pop()
 				print(cur_path[0],"<current>", cur_path[1], "dir ", cur_path[2] )	
-				if(move_to(cur_path[0], cur_path[1], cur_path[2])):
+				if(move_to(cur_path[0], cur_path[1], cur_path[2])): # if current block is viable option
 					
 					discover(cur_path[0], cur_path[1])	
 
 					temp_list = []
-					count = 0
-					
+					count = 0 # used to exapand array for later iteration
+
+					# check all possible options at each intersection
+
 					if(move_to(cur_path[0]+10,cur_path[1], "RIGHT")):#to the right one
 						count +=1
 						temp_list.append((cur_path[0]+10,cur_path[1], "RIGHT"))
@@ -182,13 +209,11 @@ if __name__ == '__main__':
 						count +=1
 						temp_list.append((cur_path[0],cur_path[1]+10, "DOWN"))
 					
+					# iterate through and add to stack randomly
 					while len(temp_list) != 0:
-						rand_num = random.randint(0, len(temp_list)-1)
+						rand_num = random.randint(0, len(temp_list)-1) # get random index
 						push(temp_list[rand_num][0], temp_list[rand_num][1], temp_list[rand_num][2])
 						temp_list.pop(rand_num)
 
-					print("#################################################################################")
-
-					pygame.display.flip()
-	pygame.display.flip()
-	time.sleep(10)
+					pygame.display.flip() #update screen
+	pygame.display.flip() 
